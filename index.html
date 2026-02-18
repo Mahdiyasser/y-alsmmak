@@ -139,31 +139,71 @@
       }
     };
 
-    // Patch existing tags already in <head> before DOMContentLoaded
-    const patchAll = () => {
-      document.querySelectorAll('script[src]').forEach(el => {
-        const busted = bust(el.src);
-        if (el.src !== busted) el.src = busted;
-      });
-      document.querySelectorAll('link[rel="stylesheet"][href]').forEach(el => {
-        const busted = bust(el.href);
-        if (el.href !== busted) el.href = busted;
-      });
-      document.querySelectorAll('img[src]').forEach(el => {
-        const busted = bust(el.src);
-        if (el.src !== busted) el.src = busted;
-      });
+    const patchNode = (node) => {
+      if (node.nodeType !== 1) return;
+
+      const tag = node.tagName;
+
+      // src-based assets
+      if (['SCRIPT', 'IMG', 'AUDIO', 'VIDEO', 'IFRAME', 'EMBED'].includes(tag) && node.src) {
+        const busted = bust(node.src);
+        if (node.src !== busted) node.src = busted;
+      }
+
+      // <link> tags — stylesheets, preloads, prefetches, etc.
+      if (tag === 'LINK' && node.href) {
+        const busted = bust(node.href);
+        if (node.href !== busted) node.href = busted;
+      }
+
+      // <source> inside <picture>, <audio>, <video>
+      if (tag === 'SOURCE') {
+        if (node.src) {
+          const busted = bust(node.src);
+          if (node.src !== busted) node.src = busted;
+        }
+        if (node.srcset) {
+          node.srcset = node.srcset
+            .split(',')
+            .map(entry => {
+              const parts = entry.trim().split(/\s+/);
+              parts[0] = bust(parts[0]);
+              return parts.join(' ');
+            })
+            .join(', ');
+        }
+      }
+
+      // srcset on <img>
+      if (tag === 'IMG' && node.srcset) {
+        node.srcset = node.srcset
+          .split(',')
+          .map(entry => {
+            const parts = entry.trim().split(/\s+/);
+            parts[0] = bust(parts[0]);
+            return parts.join(' ');
+          })
+          .join(', ');
+      }
+
+      // <object data="...">
+      if (tag === 'OBJECT' && node.data) {
+        const busted = bust(node.data);
+        if (node.data !== busted) node.data = busted;
+      }
     };
 
-    // Intercept future DOM insertions
+    const patchAll = () => {
+      document.querySelectorAll(
+        'script[src], link[href], img[src], img[srcset], ' +
+        'audio[src], video[src], source[src], source[srcset], ' +
+        'iframe[src], embed[src], object[data]'
+      ).forEach(patchNode);
+    };
+
     const observer = new MutationObserver((mutations) => {
       mutations.forEach(({ addedNodes }) => {
-        addedNodes.forEach((node) => {
-          if (node.nodeType !== 1) return;
-          if (node.tagName === 'SCRIPT' && node.src) node.src = bust(node.src);
-          if (node.tagName === 'LINK' && node.rel === 'stylesheet' && node.href) node.href = bust(node.href);
-          if (node.tagName === 'IMG' && node.src) node.src = bust(node.src);
-        });
+        addedNodes.forEach(patchNode);
       });
     });
 
