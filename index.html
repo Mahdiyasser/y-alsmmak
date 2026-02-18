@@ -139,58 +139,63 @@
       }
     };
 
+    const bustSrcset = (srcset) =>
+      srcset
+        .split(',')
+        .map(entry => {
+          const parts = entry.trim().split(/\s+/);
+          parts[0] = bust(parts[0]);
+          return parts.join(' ');
+        })
+        .join(', ');
+
     const patchNode = (node) => {
       if (node.nodeType !== 1) return;
-
       const tag = node.tagName;
+      let reloadMedia = false;
 
-      // src-based assets
-      if (['SCRIPT', 'IMG', 'AUDIO', 'VIDEO', 'IFRAME', 'EMBED'].includes(tag) && node.src) {
+      if (['SCRIPT', 'IMG', 'IFRAME', 'EMBED'].includes(tag) && node.src) {
         const busted = bust(node.src);
         if (node.src !== busted) node.src = busted;
       }
 
-      // <link> tags — stylesheets, preloads, prefetches, etc.
+      if (['AUDIO', 'VIDEO'].includes(tag) && node.src) {
+        const busted = bust(node.src);
+        if (node.src !== busted) {
+          node.src = busted;
+          reloadMedia = true;
+        }
+      }
+
       if (tag === 'LINK' && node.href) {
         const busted = bust(node.href);
         if (node.href !== busted) node.href = busted;
       }
 
-      // <source> inside <picture>, <audio>, <video>
       if (tag === 'SOURCE') {
+        const parent = node.parentElement;
         if (node.src) {
           const busted = bust(node.src);
-          if (node.src !== busted) node.src = busted;
+          if (node.src !== busted) {
+            node.src = busted;
+            if (parent && ['AUDIO', 'VIDEO'].includes(parent.tagName)) reloadMedia = true;
+          }
         }
         if (node.srcset) {
-          node.srcset = node.srcset
-            .split(',')
-            .map(entry => {
-              const parts = entry.trim().split(/\s+/);
-              parts[0] = bust(parts[0]);
-              return parts.join(' ');
-            })
-            .join(', ');
+          node.srcset = bustSrcset(node.srcset);
         }
       }
 
-      // srcset on <img>
       if (tag === 'IMG' && node.srcset) {
-        node.srcset = node.srcset
-          .split(',')
-          .map(entry => {
-            const parts = entry.trim().split(/\s+/);
-            parts[0] = bust(parts[0]);
-            return parts.join(' ');
-          })
-          .join(', ');
+        node.srcset = bustSrcset(node.srcset);
       }
 
-      // <object data="...">
       if (tag === 'OBJECT' && node.data) {
         const busted = bust(node.data);
         if (node.data !== busted) node.data = busted;
       }
+
+      if (reloadMedia && node.load) node.load();
     };
 
     const patchAll = () => {
@@ -202,12 +207,23 @@
     };
 
     const observer = new MutationObserver((mutations) => {
-      mutations.forEach(({ addedNodes }) => {
+      mutations.forEach(({ addedNodes, type, target, attributeName }) => {
+        // Handle newly inserted nodes
         addedNodes.forEach(patchNode);
+
+        // Handle attribute changes on existing nodes (e.g. src set via JS)
+        if (type === 'attributes' && ['src', 'href', 'srcset', 'data'].includes(attributeName)) {
+          patchNode(target);
+        }
       });
     });
 
-    observer.observe(document.documentElement, { childList: true, subtree: true });
+    observer.observe(document.documentElement, {
+      childList: true,
+      subtree: true,
+      attributes: true,
+      attributeFilter: ['src', 'href', 'srcset', 'data'],
+    });
 
     document.addEventListener('DOMContentLoaded', patchAll);
   })();

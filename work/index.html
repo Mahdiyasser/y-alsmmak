@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>ياسر السماك - رمضان مبارك</title>
+    <meta name="robots" content="noindex">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport">
+    <meta property="og:site_name" content="Yasser AL-Smmak">
+    <meta property="og:url" content="https://yasser-alsmmak.vetrom.site">
+    <meta property="og:image" content="https://yasser-alsmmak.vetrom.site/a/banner.jpg">
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Scheherazade+New:wght@400;700&family=Cinzel+Decorative:wght@700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="./style.css">
+</head>
+<body>
+
+<canvas id="starfield"></canvas>
+<div id="particles" style="position:fixed;inset:0;pointer-events:none;z-index:2;"></div>
+
+<!-- Curtains -->
+<div class="curtain-wrap" id="curtains">
+    <div class="curtain curtain-left"  id="curtainLeft"></div>
+    <div class="curtain curtain-right" id="curtainRight"></div>
+</div>
+
+<!-- Trigger: text → arrow → orb -->
+<div class="curtain-trigger" id="trigger" onclick="openCurtains()">
+    <div class="trigger-text">الْمَسْ هُنَا</div>
+    <span class="trigger-arrow">▼</span> <br>
+    <div class="trigger-orb">🌙</div>
+</div>
+
+<!-- Main content -->
+<div class="main">
+
+    <!-- 1. Arch -->
+    <div class="arch-header reveal" id="archHeader">
+        <svg viewBox="0 0 480 110" width="100%" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+                <linearGradient id="g1" x1="0%" y1="0%" x2="100%" y2="0%">
+                    <stop offset="0%"   stop-color="transparent"/>
+                    <stop offset="30%"  stop-color="#c9a84c"/>
+                    <stop offset="50%"  stop-color="#f0d080"/>
+                    <stop offset="70%"  stop-color="#c9a84c"/>
+                    <stop offset="100%" stop-color="transparent"/>
+                </linearGradient>
+            </defs>
+            <path d="M70 105 L70 55 Q70 18 240 18 Q410 18 410 55 L410 105" fill="none" stroke="url(#g1)" stroke-width="1.5" opacity="0.7"/>
+            <path d="M100 105 L100 65 Q100 42 240 42 Q380 42 380 65 L380 105" fill="none" stroke="url(#g1)" stroke-width="0.8" opacity="0.35"/>
+            <circle cx="70"  cy="105" r="4" fill="#c9a84c" opacity="0.8"/>
+            <circle cx="410" cy="105" r="4" fill="#c9a84c" opacity="0.8"/>
+            <circle cx="240" cy="18"  r="5" fill="#f0d080" opacity="0.9"/>
+            <text x="168" y="75" fill="#c9a84c" font-size="16" opacity="0.65" text-anchor="middle">✦</text>
+            <text x="312" y="75" fill="#c9a84c" font-size="16" opacity="0.65" text-anchor="middle">✦</text>
+            <text x="240" y="94" fill="#f0d080" font-size="20" opacity="0.9"  text-anchor="middle">☽</text>
+            <line x1="15" y1="105" x2="465" y2="105" stroke="url(#g1)" stroke-width="1"/>
+        </svg>
+    </div>
+
+    <!-- 2. Name -->
+    <div class="reveal" id="nameBlock">
+        <h1 class="name-title">ياسر السماك</h1>
+        <p class="name-sub">عضو مجلس إدارة باللجنة النقابية للعاملين بأوقاف البحيرة</p>
+    </div>
+
+    <!-- 3. Wish card — directly under name -->
+    <div class="wish-card reveal" id="wishCard">
+        <span class="corner tl">✦</span>
+        <span class="corner br">✦</span>
+        <p class="wish-line gold">🤲 رمضان كريم على قلبك</p>
+        <div class="divider"></div>
+        <p class="wish-line green">زادك الله فيه نوراً وسكينة ✨</p>
+        <div class="divider"></div>
+        <p class="wish-line sky">✨ غفر الله ذنوبك في هذا الشهر المبارك</p>
+        <div class="divider"></div>
+        <p class="wish-line violet">وجعل لك فيه دعوة لا تُرد 🎆</p>
+        <div class="divider"></div>
+        <p class="wish-line big">✨ رَمَضَان مُبَارَك ✨</p>
+    </div>
+
+    <!-- 4. Moon -->
+    <div class="reveal" id="moonHero">
+        <div class="moon-wrap">
+            <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+                <defs>
+                    <radialGradient id="mg" cx="35%" cy="35%">
+                        <stop offset="0%"   stop-color="#fff8d0"/>
+                        <stop offset="40%"  stop-color="#f0d080"/>
+                        <stop offset="80%"  stop-color="#c9a84c"/>
+                        <stop offset="100%" stop-color="#8a6020"/>
+                    </radialGradient>
+                    <radialGradient id="mg2" cx="50%" cy="50%">
+                        <stop offset="0%"   stop-color="rgba(201,168,76,0.25)"/>
+                        <stop offset="100%" stop-color="transparent"/>
+                    </radialGradient>
+                </defs>
+                <circle cx="100" cy="100" r="95" fill="url(#mg2)"/>
+                <path d="M100 22 A78 78 0 1 1 100 178 A54 54 0 1 0 100 22Z" fill="url(#mg)"/>
+                <text x="148" y="82" font-size="20" fill="#fff8d0" text-anchor="middle" opacity="0.85">✦</text>
+            </svg>
+        </div>
+    </div>
+
+    <!-- 5. Lanterns -->
+    <div class="lanterns-row reveal" id="lanternsRow" style="transition-delay:0.5s;">
+        <svg class="lantern" width="40" height="75" viewBox="0 0 45 80" xmlns="http://www.w3.org/2000/svg">
+            <defs><radialGradient id="la" cx="50%" cy="40%"><stop offset="0%" stop-color="#ffe86a"/><stop offset="60%" stop-color="#d4840a"/><stop offset="100%" stop-color="#7a4000"/></radialGradient></defs>
+            <line x1="22" y1="0" x2="22" y2="8" stroke="#c9a84c" stroke-width="2"/>
+            <polygon points="22,8 8,16 8,60 22,68 36,60 36,16" fill="url(#la)" opacity="0.9"/>
+            <line x1="8" y1="16" x2="36" y2="16" stroke="#f0d080" stroke-width="1" opacity="0.6"/>
+            <line x1="8" y1="38" x2="36" y2="38" stroke="#f0d080" stroke-width="0.8" opacity="0.4"/>
+            <line x1="8" y1="60" x2="36" y2="60" stroke="#f0d080" stroke-width="1" opacity="0.6"/>
+            <ellipse cx="22" cy="38" rx="8" ry="10" fill="rgba(255,240,100,0.25)"/>
+            <line x1="14" y1="68" x2="22" y2="78" stroke="#c9a84c" stroke-width="1.5"/>
+            <line x1="30" y1="68" x2="22" y2="78" stroke="#c9a84c" stroke-width="1.5"/>
+        </svg>
+        <svg class="lantern" width="52" height="95" viewBox="0 0 45 80" xmlns="http://www.w3.org/2000/svg" style="margin-top:-12px;">
+            <defs><radialGradient id="lb" cx="50%" cy="40%"><stop offset="0%" stop-color="#ffd26a"/><stop offset="60%" stop-color="#c9580a"/><stop offset="100%" stop-color="#6a2800"/></radialGradient></defs>
+            <line x1="22" y1="0" x2="22" y2="8" stroke="#c9a84c" stroke-width="2"/>
+            <polygon points="22,8 8,16 8,60 22,68 36,60 36,16" fill="url(#lb)" opacity="0.95"/>
+            <line x1="8" y1="16" x2="36" y2="16" stroke="#f0d080" stroke-width="1.2" opacity="0.7"/>
+            <line x1="8" y1="38" x2="36" y2="38" stroke="#f0d080" stroke-width="1" opacity="0.5"/>
+            <line x1="8" y1="60" x2="36" y2="60" stroke="#f0d080" stroke-width="1.2" opacity="0.7"/>
+            <ellipse cx="22" cy="38" rx="10" ry="12" fill="rgba(255,240,100,0.35)"/>
+            <line x1="14" y1="68" x2="22" y2="78" stroke="#c9a84c" stroke-width="1.5"/>
+            <line x1="30" y1="68" x2="22" y2="78" stroke="#c9a84c" stroke-width="1.5"/>
+        </svg>
+        <svg class="lantern" width="40" height="75" viewBox="0 0 45 80" xmlns="http://www.w3.org/2000/svg">
+            <defs><radialGradient id="lc" cx="50%" cy="40%"><stop offset="0%" stop-color="#ffe86a"/><stop offset="60%" stop-color="#d4840a"/><stop offset="100%" stop-color="#7a4000"/></radialGradient></defs>
+            <line x1="22" y1="0" x2="22" y2="8" stroke="#c9a84c" stroke-width="2"/>
+            <polygon points="22,8 8,16 8,60 22,68 36,60 36,16" fill="url(#lc)" opacity="0.9"/>
+            <line x1="8" y1="16" x2="36" y2="16" stroke="#f0d080" stroke-width="1" opacity="0.6"/>
+            <line x1="8" y1="38" x2="36" y2="38" stroke="#f0d080" stroke-width="0.8" opacity="0.4"/>
+            <line x1="8" y1="60" x2="36" y2="60" stroke="#f0d080" stroke-width="1" opacity="0.6"/>
+            <ellipse cx="22" cy="38" rx="8" ry="10" fill="rgba(255,240,100,0.25)"/>
+            <line x1="14" y1="68" x2="22" y2="78" stroke="#c9a84c" stroke-width="1.5"/>
+            <line x1="30" y1="68" x2="22" y2="78" stroke="#c9a84c" stroke-width="1.5"/>
+        </svg>
+    </div>
+
+    <!-- 6. Countdown -->
+    <div class="countdown-section reveal" id="countdownSection">
+        <div class="countdown-label">الوقت المتبقي حتى رمضان</div>
+        <div class="countdown-grid" id="countdownGrid">
+            <div class="cd-item"><div class="cd-box"><span class="cd-num" id="cd-days">00</span><span class="cd-unit">أيام</span></div></div>
+            <div class="cd-item"><div class="cd-box"><span class="cd-num" id="cd-hours">00</span><span class="cd-unit">ساعات</span></div></div>
+            <div class="cd-item"><div class="cd-box"><span class="cd-num" id="cd-minutes">00</span><span class="cd-unit">دقائق</span></div></div>
+            <div class="cd-item"><div class="cd-box"><span class="cd-num" id="cd-seconds">00</span><span class="cd-unit">ثواني</span></div></div>
+        </div>
+        <div id="completed-msg">🌙 رمضان مبارك 🌙</div>
+    </div>
+
+    <!-- 7. Footer -->
+    <div class="footer-name reveal" id="footerName">
+        ياسر السماك — عضو مجلس الإدارة
+    </div>
+
+</div>
+
+<audio id="audiocracker" src="a/Ramadanarbic.mp3" preload="none"></audio>
+<script src="./script.js"></script>
+</body>
+</html>
