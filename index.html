@@ -118,6 +118,60 @@
     </div>
 
     <script src="./script.js"></script>
+
+<script>
+  (function () {
+    if (window.location.search.includes('purge')) {
+      const ts = Date.now();
+      localStorage.setItem('cache_bust', ts);
+    }
+
+    const ts = localStorage.getItem('cache_bust');
+    if (!ts) return;
+
+    const bust = (url) => {
+      try {
+        const u = new URL(url, document.baseURI);
+        u.searchParams.set('v', ts);
+        return u.toString();
+      } catch {
+        return url;
+      }
+    };
+
+    // Patch existing tags already in <head> before DOMContentLoaded
+    const patchAll = () => {
+      document.querySelectorAll('script[src]').forEach(el => {
+        const busted = bust(el.src);
+        if (el.src !== busted) el.src = busted;
+      });
+      document.querySelectorAll('link[rel="stylesheet"][href]').forEach(el => {
+        const busted = bust(el.href);
+        if (el.href !== busted) el.href = busted;
+      });
+      document.querySelectorAll('img[src]').forEach(el => {
+        const busted = bust(el.src);
+        if (el.src !== busted) el.src = busted;
+      });
+    };
+
+    // Intercept future DOM insertions
+    const observer = new MutationObserver((mutations) => {
+      mutations.forEach(({ addedNodes }) => {
+        addedNodes.forEach((node) => {
+          if (node.nodeType !== 1) return;
+          if (node.tagName === 'SCRIPT' && node.src) node.src = bust(node.src);
+          if (node.tagName === 'LINK' && node.rel === 'stylesheet' && node.href) node.href = bust(node.href);
+          if (node.tagName === 'IMG' && node.src) node.src = bust(node.src);
+        });
+      });
+    });
+
+    observer.observe(document.documentElement, { childList: true, subtree: true });
+
+    document.addEventListener('DOMContentLoaded', patchAll);
+  })();
+</script>
 </body>
 
 </html>
